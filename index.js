@@ -2,8 +2,19 @@ var express = require("express");
 var passwordless = require("passwordless");
 var bodyParser = require("body-parser");
 var email = require("emailjs");
-var oauthServer = require("oauth2-server");
+var oauthserver = require("oauth2-server");
+var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
+var Nexmo = require("simple-nexmo")
+
+
+var nexmo = new Nexmo({
+    apiKey: 'YOUR_API_KEY',
+    apiSecret: 'YOUR_API_SECRET',
+    baseUrl: 'API_BASE_URL',
+    useSSL: true,
+    debug: false
+});
 
 var uristring = 'mongodb://localhost/health';
 
@@ -29,7 +40,7 @@ mongoose.connect(uristring, function (err, res) {
 
 passwordless.init(new MongoStore(uristring))
 
-passwordless.addDelivery(
+passwordless.addDelivery('email',
     function(tokenToSend, uidToSend, recipient, callback) {
         var host = 'localhost:3000';
         smtpServer.send({
@@ -42,9 +53,26 @@ passwordless.addDelivery(
         }, function(err, message) {
             if(err) {
                 console.log(err);
+                return callback(err);
             }
-            callback(err);
+            callback(message);
         });
+    });
+
+passwordless.addDelivery('sms',
+    function(tokenToSend, uidToSend, recipient, callback) {
+        //here to be changed sms headers as wished
+        options.from = "Company"
+        options.to = recipient;
+        //type can be also changed to text
+        options.type = 'unicode'
+        options.text = "Your login token is: "+tokenToSend+" your uid is "+uidToSend
+        nexmo.sendSMSMessage(options, function(err){
+            if (err){
+                console.log(err);
+            }
+            callback();
+        })
     });
 
 
@@ -52,6 +80,9 @@ var app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(passwordless.sessionSupport());
+app.use(passwordless.acceptToken({ successRedirect: '/'}));
 
 app.oauth = oauthserver({
     model: require("./lib/oautModel"),
@@ -88,13 +119,12 @@ app.post('/sendtoken',
             })
         }),
     function(req, res) {
-
-        res.render('sent');
+        res.render('secondstep', { uid: req.passwordless.uidToAuth });
     });
 
 router.get('/restricted', passwordless.restricted(),
     function(req, res) {
-        
+
     });
 
 app.listen(3000);
