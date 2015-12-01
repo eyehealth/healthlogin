@@ -1,0 +1,12 @@
+<html>
+<body>
+<h1>Login</h1>
+<p>You should have received a token via SMS. Type it in below:</p>
+<form action="/auth" method="POST">
+    Token:
+    <br><input name="token" type="text">
+    <input type="hidden" name="uid" value="<%= uid %>">
+    <br><input type="submit" value="Login">
+</form>
+</body>
+</html>

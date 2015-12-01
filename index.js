@@ -5,7 +5,10 @@ var email = require("emailjs");
 var oauthserver = require("oauth2-server");
 var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
-var Nexmo = require("simple-nexmo")
+var Nexmo = require("simple-nexmo");
+var ejs = require("ejs");
+var session = require('express-session');
+var uid = require("uid");
 
 
 var nexmo = new Nexmo({
@@ -37,6 +40,8 @@ mongoose.connect(uristring, function (err, res) {
         console.log ('Succeeded connected to: ' + uristring);
     }
 });
+
+var User = require("./lib/userModel")
 
 passwordless.init(new MongoStore(uristring))
 
@@ -78,25 +83,35 @@ passwordless.addDelivery('sms',
 
 var app = express();
 
+app.set('view engine', 'ejs');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.use(session({
+    genid: function(req){
+        return uid
+    },
+    secret: 'healthApp',
+    resave: true,
+    saveUninitialized: false
+}))
 app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken({ successRedirect: '/'}));
 
-app.oauth = oauthserver({
-    model: require("./lib/oautModel"),
-    grants: ['password'],
-    debug: true
-});
-
-app.all('/oauth/token', app.oauth.grant());
-
-app.get('/', app.oauth.authorise(), function (req, res) {
-    res.send('Secret area');
-});
-
-app.use(app.oauth.errorHandler());
+//app.oauth = oauthserver({
+//    model: require("./lib/oautModel"),
+//    grants: ['password'],
+//    debug: true
+//});
+//
+//app.all('/oauth/token', app.oauth.grant());
+//
+//app.get('/', app.oauth.authorise(), function (req, res) {
+//    res.send('Secret area');
+//});
+//
+//app.use(app.oauth.errorHandler());
 
 app.get('/logged_in', passwordless.acceptToken(),
     function(req, res) {
@@ -110,19 +125,38 @@ app.get('/login', function(req, res) {
 app.post('/sendtoken',
     passwordless.requestToken(
         function(user, delivery, callback, req) {
-            User.find({email: user}, function(ret){
-                if(ret){
-                    callback(null, ret.id);
-                }else{
-                    callback(null, null)
-                }
-            })
+            console.log("delivery is" +delivery);
+            console.log("user is "+user);
+            console.log("req is "+req);
+            if(delivery === 'email'){
+                console.log('it is email')
+                User.findOne({email: user}, function(err, data){
+                    if(data){
+                        callback(null, data._id);
+                    }else{
+                        callback(null, null)
+                    }
+                })
+            }
+            if (delivery === 'sms'){
+                console.log('it is sms')
+                User.findOne({phoneNumber: user}, function(err, data){
+                    if(data){
+                        callback(null, data._id);
+                    }else{
+                        callback(null, null)
+                    }
+                })
+            }
+
         }),
     function(req, res) {
+        console.log('something should be happening')
+        console.log(req.passwordless.uidToAuth)
         res.render('secondstep', { uid: req.passwordless.uidToAuth });
     });
 
-router.get('/restricted', passwordless.restricted(),
+app.get('/restricted', passwordless.restricted(),
     function(req, res) {
 
     });
