@@ -1,21 +1,33 @@
 <html>
-	<head>
-		<title>EyeHealth</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">		
-	</head>
-	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-4 col-md-push-4">
-					<h1>Login</h1>
-					<form action="/sendtoken" method="POST" class="form form-vertical">
-						Email:
-						<br><input name="user" type="text" class="form-control">
-						<br><input type="submit" value="Login" class="btn btn-default">
-					</form>
+<head>
+	<title>EyeHealth</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<style>
+		body{
+			background: #EEE;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-md-push-4">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<h1>Login</h1>
+						<hr>
+						<form action="/sendtoken" method="POST" class="form form-vertical">
+							<label for="user">Email:</label>
+							<br><input name="user" type="text" class="form-control">
+							<hr>
+							<br><input type="submit" value="Login" class="btn btn-default">
+						</form>
+					</div>
 				</div>
+
 			</div>
 		</div>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	</body>
+	</div>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</body>
 </html>
