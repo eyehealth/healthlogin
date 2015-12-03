@@ -9,7 +9,8 @@ var Nexmo = require("simple-nexmo");
 var ejs = require("ejs");
 var session = require('express-session');
 var uid = require("uid");
-
+var env = require('node-env-file');
+    env(__dirname + '/.env');
 
 var nexmo = new Nexmo({
     apiKey      : process.env.NEXMO_API_KEY,
