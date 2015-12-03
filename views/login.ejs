@@ -1,10 +1,22 @@
 <html>
-    <body>
-        <h1>Login</h1>
-        <form action="/sendtoken" method="POST">
-            Email:
-            <br><input name="user" type="text">
-            <br><input type="submit" value="Login">
-        </form>
-    </body>
+	<head>
+		<title>EyeHealth</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">		
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4 col-md-push-4">
+
+					<h1>Login</h1>
+					<form action="/sendtoken" method="POST" class="form form-vertical">
+						Email:
+						<br><input name="user" type="text" class="">
+						<br><input type="submit" value="Login">
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	</body>
 </html>

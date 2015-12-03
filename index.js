@@ -1,14 +1,20 @@
 var express = require("express");
-var passwordless = require("passwordless");
 var bodyParser = require("body-parser");
+var session = require('express-session');
+
 var email = require("emailjs");
 var oauthserver = require("oauth2-server");
+
+var passwordless = require("passwordless");
+
 var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
+
 var Nexmo = require("simple-nexmo");
 var ejs = require("ejs");
-var session = require('express-session');
+
 var uid = require("uid");
+
 var env = require('node-env-file');
     env(__dirname + '/.env');
 
