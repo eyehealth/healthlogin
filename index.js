@@ -12,25 +12,20 @@ var uid = require("uid");
 
 
 var nexmo = new Nexmo({
-    apiKey: 'YOUR_API_KEY',
-    apiSecret: 'YOUR_API_SECRET',
-    baseUrl: 'API_BASE_URL',
-    useSSL: true,
-    debug: false
+    apiKey      : process.env.NEXMO_API_KEY,
+    apiSecret   : process.env.NEXMO_API_SECRET,
+    baseUrl     : process.env.NEXMO_BASE_URL,
+    useSSL      : true,
+    debug       : true
 });
 
 var uristring = 'mongodb://localhost/health';
 
-
-var smtpUser = "";
-var smtpPassword = "";
-var smtpHost = "";
-
 var smtpServer  = email.server.connect({
-    user:    smtpUser,
-    password: smtpPassword,
-    host:    smtpHost,
-    ssl:     true
+    user        : process.env.SMTP_USER,
+    password    : process.env.SMTP_PASS,
+    host        : process.env.SMTP_HOST,
+    ssl         : true
 });
 
 mongoose.connect(uristring, function (err, res) {
@@ -155,12 +150,8 @@ app.post('/sendtoken',
         console.log(req.passwordless.uidToAuth)
         res.render('secondstep', { uid: req.passwordless.uidToAuth });
     });
-
 app.get('/restricted', passwordless.restricted(),
     function(req, res) {
 
     });
-
 app.listen(3000);
-
-
