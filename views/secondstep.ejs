@@ -1,12 +1,40 @@
 <html>
+<head>
+	<title>EyeHealth</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<style>
+		h1,h2,h3,h4,h5,h6{
+			margin-top: 0;
+			font-family: georgia;
+		}
+		body{
+			background: #EEE;
+		}
+		hr{
+			margin: 3px 0px;
+		}
+	</style>
+</head>
 <body>
-<h1>Login</h1>
-<p>You should have received a token via SMS. Type it in below:</p>
-<form action="/auth" method="POST">
-    Token:
-    <br><input name="token" type="text">
-    <input type="hidden" name="uid" value="<%= uid %>">
-    <br><input type="submit" value="Login">
-</form>
+	<div class="container">
+		<br><br>
+		<div class="row">
+			<div class="col-md-4 col-md-push-4">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="alert alert-success">
+							<p>You should have received a token via SMS. Type it in below:</p>
+						</div>
+						<form action="/auth" method="POST">
+							Token:
+							<br><input name="token" type="text">
+							<input type="hidden" name="uid" value="<%= uid %>" class="form-control">
+							<br><input type="submit" value="Login" class="btn btn-default">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
