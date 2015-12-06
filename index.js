@@ -9,6 +9,7 @@ var ejs = require("ejs");
 var env = require('node-env-file');
     env(__dirname + '/.env');
 
+var uristring = 'mongodb://localhost/health';
 
 var nexmo = new Nexmo({
     apiKey      : process.env.NEXMO_API_KEY,
@@ -52,7 +53,7 @@ app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken({ successRedirect: '/overview' }));
 
 console.log(process.env.NEXMO_BASE_URL);
-var uristring = 'mongodb://localhost/health';
+
 mongoose.connect(uristring, function (err, res) {
     if (err) {
         console.log ('ERROR connecting to: ' + uristring + '. ' + err);
