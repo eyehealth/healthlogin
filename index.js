@@ -44,6 +44,11 @@ mongoose.connect(uristring, function (err, res) {
 });
 
 var User = require("./lib/userModel");
+
+User.find({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
+    console.log(err, res)
+})
+
 passwordless.init(new MongoStore(uristring));
 
 passwordless.addDelivery('email',
