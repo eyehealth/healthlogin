@@ -45,7 +45,7 @@ mongoose.connect(uristring, function (err, res) {
 
 var User = require("./lib/userModel");
 
-User.find({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
+User.findOne({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
     console.log(err, res)
 })
 
@@ -98,6 +98,10 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
+passwordless.init();
+
+
 app.use(session({
     genid: function(req){
         return uid
@@ -135,12 +139,15 @@ app.get('/login', function(req, res) {
 
 app.post('/sendtoken',
 
-    passwordless.requestToken(
+    
+
+
+    .requestToken(
         // Turn the email address into an user's ID
         function(user, delivery, callback, reqq) {
             console.log('requestToken', user, delivery, reqq);
             // usually you would want something like:
-            User.find({email: user}, function(err, ret) {
+            User.findOne({email: user}, function(err, ret) {
                 console.log('User.find', err, ret);
                if(ret)
                   callback(null, ret.id)
