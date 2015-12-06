@@ -77,8 +77,6 @@ passwordless.addDelivery('sms',
         })
     });
 
-
-app.use(passwordless.sessionSupport());
 app.use(passwordless.acceptToken({ successRedirect: '/overview'}));
 
 //app.oauth = oauthserver({
