@@ -95,12 +95,10 @@ var app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-
 passwordless.init();
 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use(session({
     genid: function(req){
@@ -139,10 +137,7 @@ app.get('/login', function(req, res) {
 
 app.post('/sendtoken',
 
-    
-
-
-    .requestToken(
+    passwordless.requestToken(
         // Turn the email address into an user's ID
         function(user, delivery, callback, reqq) {
             console.log('requestToken', user, delivery, reqq);
