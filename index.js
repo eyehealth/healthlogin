@@ -5,7 +5,7 @@ var cookieParser = require("cookie-parser");
 var passwordless = require("passwordless");
 var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
-var Nexmo = require("easynexmo");
+var nexmo = require("easynexmo");
 var ejs = require("ejs");
 var env = require('node-env-file');
     env(__dirname + '/.env');
