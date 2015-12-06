@@ -43,9 +43,8 @@ mongoose.connect(uristring, function (err, res) {
     }
 });
 
-var User = require("./lib/userModel")
-
-passwordless.init(new MongoStore(uristring))
+var User = require("./lib/userModel");
+passwordless.init(new MongoStore(uristring));
 
 passwordless.addDelivery('email',
     function(tokenToSend, uidToSend, recipient, callback) {
@@ -124,7 +123,28 @@ app.get('/login', function(req, res) {
     res.render('login');
 });
 
-app.post('/sendtoken',
+
+app.post('/sendtoken', 
+    passwordless.requestToken(
+        // Turn the email address into an user's ID
+        function(user, delivery, callback, req) {
+            // usually you would want something like:
+            User.find({email: user}, callback(ret) {
+               if(ret)
+                  callback(null, ret.id)
+               else
+                  callback(null, null)
+          })
+          // but you could also do the following 
+          // if you want to allow anyone:
+          // callback(null, user);
+        }),
+    function(req, res) {
+       // success!
+        res.render('secondstep', { uid: req.passwordless.uidToAuth });
+});
+
+/*app.post('/sendtoken',
     passwordless.requestToken(
         function(user, delivery, callback, req) {
             console.log("delivery is" +delivery);
@@ -156,7 +176,9 @@ app.post('/sendtoken',
         console.log('something should be happening')
         console.log(req.passwordless.uidToAuth)
         res.render('secondstep', { uid: req.passwordless.uidToAuth });
-    });
+    });*/
+
+
 app.get('/restricted', passwordless.restricted(),
     function(req, res) {
 
