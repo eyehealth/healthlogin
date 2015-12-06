@@ -30,7 +30,7 @@ passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
         //here to be changed sms headers as wished
         var options = {};
         options.from = "Company"
-        options.to = recipient;
+        options.to = '47'+recipient;
         options.type = 'text'
         options.text = "Your login token is: "+tokenToSend+" your uid is "+uidToSend
         nexmo.sendSMSMessage(options, function(err){
@@ -98,7 +98,7 @@ app.post('/sendtoken',
         // Simply accept every user
         function(user, delivery, callback) {
             //callback(null, user);
-            User.findOne({"email": user}, function(err, ret) {
+            User.findOne({"phoneNumber": '+47'+user}, function(err, ret) {
                 console.log('User.find', err, ret);
                if(ret){
                   callback(null, ret.id)
