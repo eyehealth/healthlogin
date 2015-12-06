@@ -108,7 +108,7 @@ app.post('/sendtoken',
           })
         }),
     function(req, res) {
-        res.render('secondstep', {uid: 'asd'});
+        res.render('secondstep', { uid: req.passwordless.uidToAuth });
 });
 
 
