@@ -1,6 +1,7 @@
 var express = require("express");
 var expressSession = require('express-session');
 var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 var passwordless = require("passwordless");
 var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
