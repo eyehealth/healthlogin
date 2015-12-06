@@ -1,27 +1,13 @@
 var express = require("express");
+var expressSession = require('express-session');
 var bodyParser = require("body-parser");
-
-var email = require("emailjs");
-var oauthserver = require("oauth2-server");
-
 var passwordless = require("passwordless");
-
 var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
-
 var Nexmo = require("simple-nexmo");
 var ejs = require("ejs");
-
-var uid = require("uid");
 var env = require('node-env-file');
     env(__dirname + '/.env');
-
-
-var app = express();
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
 
 
 var nexmo = new Nexmo({
@@ -32,36 +18,12 @@ var nexmo = new Nexmo({
     debug       : true
 });
 
-console.log(process.env.NEXMO_BASE_URL);
 
-var uristring = 'mongodb://localhost/health';
-
-var smtpServer  = email.server.connect({
-    user        : process.env.SMTP_USER,
-    password    : process.env.SMTP_PASS,
-    host        : process.env.SMTP_HOST,
-    ssl         : true
-});
-
-mongoose.connect(uristring, function (err, res) {
-    if (err) {
-        console.log ('ERROR connecting to: ' + uristring + '. ' + err);
-    } else {
-        console.log ('Succeeded connected to: ' + uristring);
-    }
-});
-
-var User = require("./lib/userModel");
-
-User.findOne({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
-    console.log(err, res)
-});
+var app = express();
 
 
 passwordless.init(new MongoStore(uristring));
-
-passwordless.addDelivery('sms',
-    function(tokenToSend, uidToSend, recipient, callback) {
+passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
         console.log('SMS SERVICE')
         //here to be changed sms headers as wished
         var options = {};
@@ -75,38 +37,65 @@ passwordless.addDelivery('sms',
             }
             callback();
         })
-    });
+    },{ ttl: 1000*60*10 });
 
-app.use(passwordless.acceptToken({ successRedirect: '/overview'}));
 
-//app.oauth = oauthserver({
-//    model: require("./lib/oautModel"),
-//    grants: ['password'],
-//    debug: true
-//});
-//
-//app.all('/oauth/token', app.oauth.grant());
-//
-//app.get('/', app.oauth.authorise(), function (req, res) {
-//    res.send('Secret area');
-//});
-//
-//app.use(app.oauth.errorHandler());
 
-app.get('/logged_in', passwordless.acceptToken(),
-    function(req, res) {
-        res.render('homepage');
-    });
+app.set('view engine', 'ejs');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
+app.use(expressSession({secret: '42', saveUninitialized: false, resave: false}));
 
-app.get('/login', function(req, res) {
-    res.render('login');
+
+app.use(passwordless.sessionSupport());
+app.use(passwordless.acceptToken({ successRedirect: '/overview' }));
+
+console.log(process.env.NEXMO_BASE_URL);
+var uristring = 'mongodb://localhost/health';
+mongoose.connect(uristring, function (err, res) {
+    if (err) {
+        console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+    } else {
+        console.log ('Succeeded connected to: ' + uristring);
+    }
+});
+var User = require("./lib/userModel");
+User.findOne({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
+    console.log(err, res)
 });
 
 
-app.post('/sendtoken',
+
+
+/* GET home page. */
+app.get('/', function(req, res) {
+  res.render('index', { user: req.user });
+});
+
+/* GET restricted site. */
+app.get('/restricted', passwordless.restricted(),
+ function(req, res) {
+  res.render('restricted', { user: req.user });
+});
+
+/* GET login screen. */
+app.get('/login', function(req, res) {
+  res.render('login', { user: req.user });
+});
+
+/* GET logout. */
+app.get('/logout', passwordless.logout(),
+    function(req, res) {
+  res.redirect('/');
+});
+
+/* POST login screen. */
+app.post('/sendtoken', 
     passwordless.requestToken(
-        function(user, delivery, callback, req) {
-            console.log('requestToken', user, delivery, req);            
+        // Simply accept every user
+        function(user, delivery, callback) {
+            //callback(null, user);
             User.findOne({"email": user}, function(err, ret) {
                 console.log('User.find', err, ret);
                if(ret){
@@ -115,50 +104,11 @@ app.post('/sendtoken',
                   callback(null, null)
                }
           })
-        }, {
-            failureRedirect: '/failed',
-        }), function(req,res){
-        console.log('HEYE HEY');
-    }
-);
-
-/*app.post('/sendtoken',
-    passwordless.requestToken(
-        function(user, delivery, callback, req) {
-            console.log("delivery is" +delivery);
-            console.log("user is "+user);
-            console.log("req is "+req);
-            if(delivery === 'email'){
-                console.log('it is email')
-                User.findOne({email: user}, function(err, data){
-                    if(data){
-                        callback(null, data._id);
-                    }else{
-                        callback(null, null)
-                    }
-                })
-            }
-            if (delivery === 'sms'){
-                console.log('it is sms')
-                User.findOne({phoneNumber: user}, function(err, data){
-                    if(data){
-                        callback(null, data._id);
-                    }else{
-                        callback(null, null)
-                    }
-                })
-            }
-
         }),
     function(req, res) {
-        console.log('something should be happening')
-        console.log(req.passwordless.uidToAuth)
-        res.render('secondstep', { uid: req.passwordless.uidToAuth });
-    });*/
+        res.render('secondstep', {uid: 'asd'});
+});
 
 
-app.get('/restricted', passwordless.restricted(),
-    function(req, res) {
 
-    });
 app.listen(3000);
