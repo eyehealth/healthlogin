@@ -124,12 +124,15 @@ app.get('/login', function(req, res) {
 });
 
 
-app.post('/sendtoken', 
+app.post('/sendtoken', function(req,res){
+
     passwordless.requestToken(
         // Turn the email address into an user's ID
-        function(user, delivery, callback, req) {
+        function(user, delivery, callback, reqq) {
+            console.log('requestToken', user, delivery);
             // usually you would want something like:
             User.find({email: user}, function(err, ret) {
+                console.log(err, ret);
                if(ret)
                   callback(null, ret.id)
                else
@@ -138,9 +141,9 @@ app.post('/sendtoken',
           // but you could also do the following 
           // if you want to allow anyone:
           // callback(null, user);
-        }),
-    function(req, res) {
-       // success!
+        });
+
+
         res.render('secondstep', { uid: req.passwordless.uidToAuth });
 });
 
