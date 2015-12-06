@@ -128,7 +128,7 @@ app.get('/login', function(req, res) {
 });
 
 
-app.post('/sendtoken', function(req,res){
+app.post('/sendtoken',
 
     passwordless.requestToken(
         // Turn the email address into an user's ID
@@ -146,11 +146,8 @@ app.post('/sendtoken', function(req,res){
 
         }, function(reqqq, resss){
             resss.render('secondstep', {uid: reqqq.passwordless.uidToAuth});
-        });
-
-
-        
-});
+        })
+);
 
 /*app.post('/sendtoken',
     passwordless.requestToken(
