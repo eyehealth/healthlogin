@@ -87,6 +87,11 @@ app.get('/logout', passwordless.logout(),
   res.redirect('/');
 });
 
+router.post('/auth', passwordless.acceptToken({ allowPost: true }),
+    function(req, res) {
+        res.redirect('/restricted');
+});
+
 /* POST login screen. */
 app.post('/sendtoken', 
     passwordless.requestToken(
