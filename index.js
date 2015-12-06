@@ -14,9 +14,10 @@ var Nexmo = require("simple-nexmo");
 var ejs = require("ejs");
 
 var uid = require("uid");
-
 var env = require('node-env-file');
     env(__dirname + '/.env');
+
+
 
 var nexmo = new Nexmo({
     apiKey      : process.env.NEXMO_API_KEY,
@@ -47,31 +48,32 @@ var User = require("./lib/userModel");
 
 User.findOne({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
     console.log(err, res)
-})
+});
+
 
 passwordless.init(new MongoStore(uristring));
 
-passwordless.addDelivery('email',
-    function(tokenToSend, uidToSend, recipient, callback) {
+// passwordless.addDelivery('email',
+//     function(tokenToSend, uidToSend, recipient, callback) {
 
-        console.log('EMAIL SERVICE')
+//         console.log('EMAIL SERVICE')
 
-        var host = 'localhost:3000';
-        smtpServer.send({
-            text:    'Hello!\nAccess your account here: http://'
-            + host + '?token=' + tokenToSend + '&uid='
-            + encodeURIComponent(uidToSend),
-            from:    yourEmail,
-            to:      recipient,
-            subject: 'Token for ' + host
-        }, function(err, message) {
-            if(err) {
-                console.log(err);
-                return callback(err);
-            }
-            callback(message);
-        });
-    });
+//         var host = 'localhost:3000';
+//         smtpServer.send({
+//             text:    'Hello!\nAccess your account here: http://'
+//             + host + '?token=' + tokenToSend + '&uid='
+//             + encodeURIComponent(uidToSend),
+//             from:    yourEmail,
+//             to:      recipient,
+//             subject: 'Token for ' + host
+//         }, function(err, message) {
+//             if(err) {
+//                 console.log(err);
+//                 return callback(err);
+//             }
+//             callback(message);
+//         });
+//     });
 
 passwordless.addDelivery('sms',
     function(tokenToSend, uidToSend, recipient, callback) {
@@ -95,7 +97,6 @@ var app = express();
 
 app.set('view engine', 'ejs');
 
-passwordless.init();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
