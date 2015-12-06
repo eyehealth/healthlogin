@@ -87,7 +87,7 @@ app.get('/logout', passwordless.logout(),
   res.redirect('/');
 });
 
-router.post('/auth', passwordless.acceptToken({ allowPost: true }),
+app.post('/auth', passwordless.acceptToken({ allowPost: true }),
     function(req, res) {
         res.redirect('/restricted');
 });
