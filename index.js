@@ -137,23 +137,22 @@ app.get('/login', function(req, res) {
 
 
 app.post('/sendtoken',
-
     passwordless.requestToken(
         // Turn the email address into an user's ID
-        function(user, delivery, callback, reqq) {
-            console.log('requestToken', user, delivery, reqq);
+        function(user, delivery, callback, req) {
+            console.log('requestToken', user, delivery, req);
             // usually you would want something like:
             User.findOne({email: user}, function(err, ret) {
                 console.log('User.find', err, ret);
-               if(ret)
+               if(ret){
                   callback(null, ret.id)
-               else
+               }else{
                   callback(null, null)
+               }
           })
-            
+        }, {
+            failureRedirect: '/failed',
 
-        }, function(reqqq, resss){
-            resss.render('secondstep', {uid: reqqq.passwordless.uidToAuth});
         })
 );
 
