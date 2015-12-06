@@ -34,7 +34,7 @@ passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
             }
             callback();
         });
-    },{  numberToken: {max: 99999}});
+    },{  numberToken: {max: 999}});
 
 
 
