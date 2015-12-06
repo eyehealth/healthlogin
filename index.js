@@ -144,7 +144,7 @@ app.post('/sendtoken', function(req,res){
         });
 
 
-        res.render('secondstep', { uid: req.passwordless.uidToAuth });
+        res.render('secondstep');
 });
 
 /*app.post('/sendtoken',
