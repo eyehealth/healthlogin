@@ -129,7 +129,7 @@ app.post('/sendtoken',
         // Turn the email address into an user's ID
         function(user, delivery, callback, req) {
             // usually you would want something like:
-            User.find({email: user}, callback(ret) {
+            User.find({email: user}, function(err, ret) {
                if(ret)
                   callback(null, ret.id)
                else
