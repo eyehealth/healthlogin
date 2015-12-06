@@ -48,6 +48,9 @@ passwordless.init(new MongoStore(uristring));
 
 passwordless.addDelivery('email',
     function(tokenToSend, uidToSend, recipient, callback) {
+
+        console.log('EMAIL SERVICE')
+
         var host = 'localhost:3000';
         smtpServer.send({
             text:    'Hello!\nAccess your account here: http://'
@@ -67,6 +70,7 @@ passwordless.addDelivery('email',
 
 passwordless.addDelivery('sms',
     function(tokenToSend, uidToSend, recipient, callback) {
+        console.log('SMS SERVICE')
         //here to be changed sms headers as wished
         options.from = "Company"
         options.to = recipient;
@@ -129,10 +133,10 @@ app.post('/sendtoken', function(req,res){
     passwordless.requestToken(
         // Turn the email address into an user's ID
         function(user, delivery, callback, reqq) {
-            console.log('requestToken', user, delivery);
+            console.log('requestToken', user, delivery, reqq);
             // usually you would want something like:
             User.find({email: user}, function(err, ret) {
-                console.log(err, ret);
+                console.log('User.find', err, ret);
                if(ret)
                   callback(null, ret.id)
                else
