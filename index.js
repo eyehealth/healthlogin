@@ -5,20 +5,15 @@ var cookieParser = require("cookie-parser");
 var passwordless = require("passwordless");
 var MongoStore = require("passwordless-mongostore");
 var mongoose = require('mongoose');
-var Nexmo = require("simple-nexmo");
+var Nexmo = require("easynexmo");
 var ejs = require("ejs");
 var env = require('node-env-file');
     env(__dirname + '/.env');
 
 var uristring = 'mongodb://localhost/health';
 
-var nexmo = new Nexmo({
-    apiKey      : process.env.NEXMO_API_KEY,
-    apiSecret   : process.env.NEXMO_API_SECRET,
-    baseUrl     : process.env.NEXMO_BASE_URL,
-    useSSL      : true,
-    debug       : true
-});
+nexmo.initialize(process.env.NEXMO_API_KEY, process.env.NEXMO_API_SECRET, true)
+
 
 
 var app = express();
@@ -33,13 +28,13 @@ passwordless.addDelivery(function(tokenToSend, uidToSend, recipient, callback) {
         options.to = '47'+recipient;
         options.type = 'text'
         options.text = "Your login token is: "+tokenToSend+" your uid is "+uidToSend
-        nexmo.sendSMSMessage(options, function(err){
+        nexmo.sendTextMessage(options.from, options.to, options.text, {}, function(err){
             if (err){
                 console.log(err);
             }
             callback();
-        })
-    },{ ttl: 1000*60*10 });
+        });
+    },{  });
 
 
 
