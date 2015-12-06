@@ -138,13 +138,12 @@ app.post('/sendtoken', function(req,res){
                else
                   callback(null, null)
           })
-          // but you could also do the following 
-          // if you want to allow anyone:
-          // callback(null, user);
+            res.render('secondstep', {uid: reqq.passwordless.uidToAuth});
+
         });
 
 
-        res.render('secondstep');
+        
 });
 
 /*app.post('/sendtoken',
