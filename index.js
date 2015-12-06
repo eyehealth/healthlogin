@@ -138,11 +138,9 @@ app.get('/login', function(req, res) {
 
 app.post('/sendtoken',
     passwordless.requestToken(
-        // Turn the email address into an user's ID
         function(user, delivery, callback, req) {
-            console.log('requestToken', user, delivery, req);
-            // usually you would want something like:
-            User.findOne({email: user}, function(err, ret) {
+            console.log('requestToken', user, delivery, req);            
+            User.findOne({"email": user}, function(err, ret) {
                 console.log('User.find', err, ret);
                if(ret){
                   callback(null, ret.id)
@@ -152,8 +150,9 @@ app.post('/sendtoken',
           })
         }, {
             failureRedirect: '/failed',
-
-        })
+        }), function(req,res){
+        console.log('HEYE HEY');
+    }
 );
 
 /*app.post('/sendtoken',
