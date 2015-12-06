@@ -5,6 +5,7 @@
   "main": "nodemon index.js",
   "dependencies": {
     "body-parser": "^1.14.1",
+    "cookie-parser": "^1.4.0",
     "ejs": "^2.3.4",
     "emailjs": "^1.0.1",
     "express": "^4.13.3",
