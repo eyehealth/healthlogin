@@ -1,6 +1,5 @@
 var express = require("express");
 var bodyParser = require("body-parser");
-var session = require('express-session');
 
 var email = require("emailjs");
 var oauthserver = require("oauth2-server");
@@ -18,6 +17,12 @@ var env = require('node-env-file');
     env(__dirname + '/.env');
 
 
+var app = express();
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
 
 var nexmo = new Nexmo({
     apiKey      : process.env.NEXMO_API_KEY,
@@ -26,6 +31,8 @@ var nexmo = new Nexmo({
     useSSL      : true,
     debug       : true
 });
+
+console.log(process.env.NEXMO_BASE_URL);
 
 var uristring = 'mongodb://localhost/health';
 
@@ -53,36 +60,14 @@ User.findOne({email: 'eivindingebrigtsen@gmail.com'}, function(err, res){
 
 passwordless.init(new MongoStore(uristring));
 
-// passwordless.addDelivery('email',
-//     function(tokenToSend, uidToSend, recipient, callback) {
-
-//         console.log('EMAIL SERVICE')
-
-//         var host = 'localhost:3000';
-//         smtpServer.send({
-//             text:    'Hello!\nAccess your account here: http://'
-//             + host + '?token=' + tokenToSend + '&uid='
-//             + encodeURIComponent(uidToSend),
-//             from:    yourEmail,
-//             to:      recipient,
-//             subject: 'Token for ' + host
-//         }, function(err, message) {
-//             if(err) {
-//                 console.log(err);
-//                 return callback(err);
-//             }
-//             callback(message);
-//         });
-//     });
-
 passwordless.addDelivery('sms',
     function(tokenToSend, uidToSend, recipient, callback) {
         console.log('SMS SERVICE')
         //here to be changed sms headers as wished
+        var options = {};
         options.from = "Company"
         options.to = recipient;
-        //type can be also changed to text
-        options.type = 'unicode'
+        options.type = 'text'
         options.text = "Your login token is: "+tokenToSend+" your uid is "+uidToSend
         nexmo.sendSMSMessage(options, function(err){
             if (err){
@@ -93,24 +78,8 @@ passwordless.addDelivery('sms',
     });
 
 
-var app = express();
-
-app.set('view engine', 'ejs');
-
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.use(session({
-    genid: function(req){
-        return uid
-    },
-    secret: 'healthApp',
-    resave: true,
-    saveUninitialized: false
-}))
 app.use(passwordless.sessionSupport());
-app.use(passwordless.acceptToken({ successRedirect: '/'}));
+app.use(passwordless.acceptToken({ successRedirect: '/overview'}));
 
 //app.oauth = oauthserver({
 //    model: require("./lib/oautModel"),
