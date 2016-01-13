@@ -2,7 +2,8 @@
 
 
 ## Prerequisites
-Add file in repo (which is ignored) to work with it.
+Add .env file in repo (which is ignored) to work with it.
+
 
 ´´´
 .env
